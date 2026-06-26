@@ -1,27 +1,36 @@
 /**
  * ELEMENTS — Login
  * Seletores da página de Login do Qazando Shop.
+ *
+ * Todos os seletores são funções (page) => Locator:
+ *   - Preferência: role > label > text > ID semântico > atributo
+ *   - IDs auto-gerados e classes de framework: evitados
+ *   - Exceção aceita: classe de biblioteca estável (.swal2-html-container)
  */
 
-import { Page } from '@playwright/test';
-    
+import { Page, Locator } from '@playwright/test';
+
 const LoginElements = {
+
   // Header (página inicial)
-  loginLink: 'a[href="/login"]:not(#item4)',
+  // getByRole + .first() ignora o link duplicado no menu mobile
+  loginLink: (page: Page): Locator =>
+    page.getByRole('link', { name: 'Login' }).first(),
 
   // Formulário de Login
-  emailInput:    '#user',
-  passwordInput: '#password',
-  loginButton:   '#btnLogin',
+  // #user e input[type="password"] são IDs/atributos semânticos developer-defined
+  // O site não usa <label for=""> nem data-testid, então ID semântico é o melhor disponível
+  emailInput:    (page: Page): Locator => page.locator('#user'),
+  passwordInput: (page: Page): Locator => page.locator('input[type="password"]'),
+  loginButton:   (page: Page): Locator => page.getByRole('button', { name: 'login' }),
 
-  // Modal de sucesso (SweetAlert2)
-  successTitle:    '.swal2-title',
-  successMessage:  '.swal2-html-container',
-  successOkButton: '.swal2-confirm',
+  // Modal de sucesso
+  successTitle:    (page: Page): Locator => page.getByRole('heading', { name: 'Login realizado' }),
+  successMessage:  (page: Page): Locator => page.locator('.swal2-html-container'), // container sem role semântico
+  successOkButton: (page: Page): Locator => page.getByRole('button', { name: 'OK' }),
 
-  // Modal de erro (texto de erro exibido na página)
-  msg_email_invalido:   (page: Page, email: string) => page.getByText(email)
-
+  // Mensagens de erro (busca pelo texto visível na tela)
+  msgErro: (page: Page, texto: string): Locator => page.getByText(texto),
 
 } as const;
 
