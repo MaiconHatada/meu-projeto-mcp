@@ -10,7 +10,7 @@ export class LoginHelper {
 
   /** Clica no botão Login do header e aguarda a navegação */
   async clicarBotaoLogin(): Promise<void> {
-    await this.page.locator(LoginElements.loginLink).click();
+    await LoginElements.loginLink(this.page).click();
     await this.page.waitForURL('**/login');
     await this.page.waitForLoadState('networkidle');
   }
@@ -25,32 +25,31 @@ export class LoginHelper {
     const email    = process.env.USER_EMAIL    ?? '';
     const password = process.env.USER_PASSWORD ?? '';
 
-    await this.page.locator(LoginElements.emailInput).fill(email);
-    await this.page.locator(LoginElements.passwordInput).fill(password);
-    await this.page.locator(LoginElements.loginButton).click();
+    await LoginElements.emailInput(this.page).fill(email);
+    await LoginElements.passwordInput(this.page).fill(password);
+    await LoginElements.loginButton(this.page).click();
   }
 
   /** Valida o modal de sucesso e a mensagem de boas-vindas */
   async validarLoginRealizado(): Promise<void> {
     const email = process.env.USER_EMAIL ?? '';
 
-    await expect(this.page.locator(LoginElements.successTitle))
-      .toHaveText('Login realizado', );
+    await expect(LoginElements.successTitle(this.page))
+      .toBeVisible();
 
-    await expect(this.page.locator(LoginElements.successMessage))
+    await expect(LoginElements.successMessage(this.page))
       .toContainText(`Olá, ${email}`);
   }
 
   async realizarLoginSemInformarEmailValido(): Promise<void> {
-    const email_invalido    = process.env.USER_EMAIL_INVALIDO ?? '';
-    const password          = process.env.USER_PASSWORD ?? '';
+    const email_invalido = process.env.USER_EMAIL_INVALIDO ?? '';
+    const password       = process.env.USER_PASSWORD       ?? '';
 
-    await this.page.locator(LoginElements.emailInput).fill(email_invalido);
-    await this.page.locator(LoginElements.passwordInput).fill(password);
-    await this.page.locator(LoginElements.loginButton).click();
+    await LoginElements.emailInput(this.page).fill(email_invalido);
+    await LoginElements.passwordInput(this.page).fill(password);
+    await LoginElements.loginButton(this.page).click();
 
-    // Validando a mensagem de erro exibida na página
-    await expect(LoginElements.msg_email_invalido(this.page, 'E-mail inválido.'))
+    await expect(LoginElements.msgErro(this.page, 'E-mail inválido.'))
       .toBeVisible();
   }
 
