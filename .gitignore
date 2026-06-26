@@ -16,6 +16,7 @@ playwright-report/
 
 # Arquivos de notas pessoais
 duvidas.txt
+docs/
 
 # Sistema operacional
 .DS_Store
