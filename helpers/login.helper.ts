@@ -40,4 +40,14 @@ export class LoginHelper {
     await expect(this.page.locator(LoginElements.successMessage))
       .toContainText(`Olá, ${email}`, { timeout: 5000 });
   }
+
+  async realizarLoginSemInformarEmailValido(): Promise<void> {
+    const email_invalido    = process.env.USER_EMAIL_INVALIDO ?? '';
+    const password          = process.env.USER_PASSWORD ?? '';
+
+    await this.page.locator(LoginElements.emailInput).fill(email_invalido);
+    await this.page.locator(LoginElements.passwordInput).fill(password);
+    await this.page.locator(LoginElements.loginButton).click();
+  }
+
 }
