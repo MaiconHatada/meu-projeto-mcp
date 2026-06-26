@@ -11,7 +11,7 @@ export class LoginHelper {
   /** Clica no botão Login do header e aguarda a navegação */
   async clicarBotaoLogin(): Promise<void> {
     await this.page.locator(LoginElements.loginLink).click();
-    await this.page.waitForURL('**/login', { timeout: 10000 });
+    await this.page.waitForURL('**/login');
     await this.page.waitForLoadState('networkidle');
   }
 
@@ -35,10 +35,10 @@ export class LoginHelper {
     const email = process.env.USER_EMAIL ?? '';
 
     await expect(this.page.locator(LoginElements.successTitle))
-      .toHaveText('Login realizado', { timeout: 10000 });
+      .toHaveText('Login realizado', );
 
     await expect(this.page.locator(LoginElements.successMessage))
-      .toContainText(`Olá, ${email}`, { timeout: 5000 });
+      .toContainText(`Olá, ${email}`);
   }
 
   async realizarLoginSemInformarEmailValido(): Promise<void> {
@@ -48,6 +48,10 @@ export class LoginHelper {
     await this.page.locator(LoginElements.emailInput).fill(email_invalido);
     await this.page.locator(LoginElements.passwordInput).fill(password);
     await this.page.locator(LoginElements.loginButton).click();
+
+    // Validando a mensagem de erro exibida na página
+    await expect(LoginElements.msg_email_invalido(this.page, 'E-mail inválido.'))
+      .toBeVisible();
   }
 
 }
