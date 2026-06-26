@@ -1,0 +1,23 @@
+# Variáveis de ambiente (dados sensíveis)
+.env
+.env.local
+.env.*.local
+
+# Dependências
+node_modules/
+
+# Build / compilação
+dist/
+
+# Playwright — artefatos de teste (não precisam versionar)
+test-results/
+playwright-report/
+.playwright-mcp/
+
+# Arquivos de notas pessoais
+duvidas.txt
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
