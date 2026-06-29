@@ -1,6 +1,6 @@
 # meu-projeto-mcp
 
-Framework de automação de testes E2E construído com **Playwright** + **TypeScript**, seguindo arquitetura em 3 camadas: **Elements → Helper → Spec**.
+Framework de automação de testes E2E construído com **Playwright** + **TypeScript**, seguindo arquitetura em 4 camadas: **Elements → Helper → Fixture → Spec**.
 
 ---
 
@@ -30,22 +30,27 @@ meu-projeto-mcp/
 ├── helpers/                    # CAMADA 2 — Ações do usuário
 │   └── login.helper.ts
 │
+├── fixture/                    # CAMADA 3 — Injeção de dependência
+│   └── index.ts
+│
 └── tests/
-    └── E2E/                    # CAMADA 3 — Specs
+    └── E2E/                    # CAMADA 4 — Specs
         └── login.spec.ts
 ```
 
-### Por que 3 camadas?
+### Por que 4 camadas?
 
 | Camada | Responsabilidade | Contém |
 |---|---|---|
-| **Elements** | Onde estão os elementos | Seletores CSS/ID |
+| **Elements** | Onde estão os elementos | Seletores CSS/ID/role |
 | **Helper** | O que o usuário faz | Métodos de ação + assertions |
-| **Spec** | O que está sendo testado | `test()` + `beforeEach()` |
+| **Fixture** | Como os helpers chegam ao teste | `test.extend` — instancia e injeta helpers automaticamente |
+| **Spec** | O que está sendo testado | `test()` + `beforeEach()` — sem `new`, sem setup manual |
 
 > Se o HTML do site mudar → mexe só no **Elements**.  
 > Se a lógica de ação mudar → mexe só no **Helper**.  
-> O **Spec** fica estável.
+> O **Fixture** garante que cada teste receba um helper pronto, com a página já carregada.  
+> O **Spec** fica completamente limpo.
 
 ---
 
@@ -79,6 +84,7 @@ HEADLESS=false
 USER_EMAIL=seu@email.com
 USER_PASSWORD=suasenha
 USER_EMAIL_INVALIDO=invalido@teste.com
+USER_PASSWORD_INVALIDO=qualquercoisa
 ```
 
 ---
@@ -105,13 +111,26 @@ npm run test:report
 
 ### Login — `tests/E2E/login.spec.ts`
 
-| Teste | Descrição |
-|---|---|
-| ✅ Navegar para a página de Login | Clica no botão Login do header e valida a URL `/login` |
-| ✅ Login com sucesso | Preenche credenciais válidas e valida modal "Login realizado" |
-| ✅ Login com e-mail inválido | Preenche e-mail inválido e valida mensagem de erro "E-mail inválido." |
+| Teste | Tipo | Fixture usado |
+|---|---|---|
+| ✅ Deve navegar para a página de Login ao clicar no botão Login | Navegação | `loginHelper` (beforeEach) |
+| ✅ Deve realizar login com sucesso e exibir mensagem de boas-vindas | Happy path | `loginHelper` |
+| ✅ Deve exibir mensagem de erro ao tentar realizar login com email inválido | Unhappy path | `loginHelper` |
+
+> O `beforeEach` do fixture já navega para `BASE_URL` e entrega o `loginHelper` instanciado — os specs não chamam `new` nem `page.goto()`.
 
 **Site testado:** [automationpratice.com.br](https://www.automationpratice.com.br) — Qazando Shop (site feito para prática de automação)
+
+---
+
+## Evidências de Falha
+
+O `playwright.config.ts` está configurado para capturar automaticamente:
+
+| Artefato | Gatilho | Localização |
+|---|---|---|
+| Screenshot | Apenas em falha | `test-results/` |
+| Vídeo | Retido em falha | `test-results/` |
 
 ---
 

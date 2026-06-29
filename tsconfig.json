@@ -8,8 +8,9 @@
     "skipLibCheck": true,
     "outDir": "./dist",
     "rootDir": ".",
-    "baseUrl": "."
+    "baseUrl": "./",
+    "ignoreDeprecations": "6.0"
   },
-  "include": ["elements/**/*", "helpers/**/*", "tests/**/*", "playwright.config.ts"],
+  "include": ["elements/**/*", "helpers/**/*", "fixture/**/*", "tests/**/*", "playwright.config.ts"],
   "exclude": ["node_modules", "dist"]
 }
